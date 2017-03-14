@@ -1,0 +1,172 @@
+%dw 1.0
+%output application/java
+%function generate(char, times)(char ++ generate(char, times - 1)) when times > 0 otherwise ""
+---
+{
+	part1 : payload.MessageData.ControlData.@InterfaceInstance 
+	++ payload.MessageData.ControlData.@InterfaceRunMode 
+	++ payload.MessageData.ControlData.@InterfaceRunTimeStamp 
+	++ payload.MessageData.ControlData.@OriginalRunId 
+	++ payload.MessageData.ControlData.@RunParameter 
+	++ payload.MessageData.ControlData.@BreweryCode 
+	++ payload.MessageData.ControlData.@FillerSpace27
+	++ payload.MessageData.ApplicationData.BarcodeCount 
+	++ payload.MessageData.ApplicationData.FillerSpace72
+	
+	++ (( payload.MessageData.ApplicationData.CVRHeader.@HCompanyName ++ generate(" ",4 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HCompanyName)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HCompanyName) < 4)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HCompanyName[0..3])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HBreweryCode ++ generate(" ",4 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HBreweryCode)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HBreweryCode) < 4)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HBreweryCode[0..3])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HSystemCode ++ generate(" ",3 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemCode)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemCode) < 3)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HSystemCode[0..2])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HSubSystemCode ++ generate(" ",10 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSubSystemCode)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSubSystemCode) < 10)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HSubSystemCode[0..9])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HBatchNumber ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HBatchNumber)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HBatchNumber) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HBatchNumber[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HConstantString00 ++ generate(" ",2 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HConstantString00)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HConstantString00) < 2)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HConstantString00[0..1])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HSystemDate ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemDate)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemDate) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HSystemDate[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HSystemTime ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemTime)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSystemTime) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HSystemTime[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HSecondSystemDate ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSecondSystemDate)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HSecondSystemDate) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HSecondSystemDate[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HRecordLength ++ generate(" ",4 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HRecordLength)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HRecordLength) < 4)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HRecordLength[0..3])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HHashPointerNumber ++ generate(" ",4 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HHashPointerNumber)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HHashPointerNumber) < 4)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HHashPointerNumber[0..3])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HHashLength ++ generate(" ",2 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HHashLength)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HHashLength) < 2)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HHashLength[0..1])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HFileNumber ++ generate(" ",2 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HFileNumber)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HFileNumber) < 2)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HFileNumber[0..1])
+
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HFillerSpace12 ++ generate(" ",12 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HFillerSpace12)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HFillerSpace12) < 12)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HFillerSpace12[0..11])
+
+++ (( payload.MessageData.ApplicationData.CVRHeader.@HConstantStringHDR ++ generate(" ",9 - (sizeOf payload.MessageData.ApplicationData.CVRHeader.@HConstantStringHDR)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRHeader.@HConstantStringHDR) < 9)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRHeader.@HConstantStringHDR[0..8]),
+	 	  	 
+
+part2 : (( payload.MessageData.ApplicationData.*BarcodeDetails default []) map {
+		A: (( $.@SendingBreweryCode ++ generate(" ",4 - (sizeOf $.@SendingBreweryCode)))
+ 			when ((sizeOf $.@SendingBreweryCode) < 4)
+	 	  	 otherwise $.@SendingBreweryCode[0..3])
+
+++ (( $.@WholesalerNumber ++ generate(" ",5 - (sizeOf $.@WholesalerNumber)))
+ 			when ((sizeOf $.@WholesalerNumber) < 5)
+	 	  	 otherwise $.@WholesalerNumber[0..4])
+
+++ (( $.@OrderNumber ++ generate(" ",5 - (sizeOf $.@OrderNumber)))
+ 			when ((sizeOf $.@OrderNumber) < 5)
+	 	  	 otherwise $.@OrderNumber[0..4])
+
+++ (( $.@BarcodeNumber ++ generate(" ",10 - (sizeOf $.@BarcodeNumber)))
+ 			when ((sizeOf $.@BarcodeNumber) < 10)
+	 	  	 otherwise $.@BarcodeNumber[0..9])
+
+++ (( $.@PCSCode ++ generate(" ",7 - (sizeOf $.@PCSCode)))
+ 			when ((sizeOf $.@PCSCode) < 7)
+	 	  	 otherwise $.@PCSCode[0..6])
+
+++ (( $.@CasesQuantity ++ generate(" ",4 - (sizeOf $.@CasesQuantity)))
+ 			when ((sizeOf $.@CasesQuantity) < 4)
+	 	  	 otherwise $.@CasesQuantity[0..3])
+
+++ (( $.@ProdDate ++ generate(" ",5 - (sizeOf $.@ProdDate)))
+ 			when ((sizeOf $.@ProdDate) < 5)
+	 	  	 otherwise $.@ProdDate[0..4])
+
+++ (( $.@ProdTime ++ generate(" ",4 - (sizeOf $.@ProdTime)))
+ 			when ((sizeOf $.@ProdTime) < 4)
+	 	  	 otherwise $.@ProdTime[0..3])
+
+++ (( $.@ProductionUnitNumber ++ generate(" ",3 - (sizeOf $.@ProductionUnitNumber)))
+ 			when ((sizeOf $.@ProductionUnitNumber) < 3)
+	 	  	 otherwise $.@ProductionUnitNumber[0..2])
+
+++ (( $.@ProductionBrewery ++ generate(" ",4 - (sizeOf $.@ProductionBrewery)))
+ 			when ((sizeOf $.@ProductionBrewery) < 4)
+	 	  	 otherwise $.@ProductionBrewery[0..3])
+
+++ (( $.@FillerSpace26 ++ generate(" ",29 - (sizeOf $.@FillerSpace26)))
+ 			when ((sizeOf $.@FillerSpace26) < 29)
+	 	  	 otherwise $.@FillerSpace26[0..28])
+	}),
+
+part3 : (( payload.MessageData.ApplicationData.CVRFooter.@FFillerSpace8 ++ generate(" ",8 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FFillerSpace8)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FFillerSpace8) < 8)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FFillerSpace8[0..7])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FSystemCode ++ generate(" ",3 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemCode)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemCode) < 3)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FSystemCode[0..2])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FSubSystemCode ++ generate(" ",10 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSubSystemCode)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSubSystemCode) < 10)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FSubSystemCode[0..9])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FSecondFillerSpace8 ++ generate(" ",8 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSecondFillerSpace8)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSecondFillerSpace8) < 8)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FSecondFillerSpace8[0..7])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FSystemDate ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemDate)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemDate) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FSystemDate[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FSystemTime ++ generate(" ",6 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemTime)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FSystemTime) < 6)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FSystemTime[0..5])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FThirdFillerSpace9 ++ generate(" ",9 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FThirdFillerSpace9)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FThirdFillerSpace9) < 9)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FThirdFillerSpace9[0..8])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FRecordCount ++ generate(" ",10 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FRecordCount)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FRecordCount) < 10)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FRecordCount[0..9])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FHashTotalCount ++ generate(" ",10 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FHashTotalCount)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FHashTotalCount) < 10)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FHashTotalCount[0..9])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FFourthFillerSpace1 ++ generate(" ",1 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FFourthFillerSpace1)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FFourthFillerSpace1) < 1)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FFourthFillerSpace1[0..0])
+
+++ (( payload.MessageData.ApplicationData.CVRFooter.@FConstantStringTLR ++ generate(" ",9 - (sizeOf payload.MessageData.ApplicationData.CVRFooter.@FConstantStringTLR)))
+ 			when ((sizeOf payload.MessageData.ApplicationData.CVRFooter.@FConstantStringTLR) < 9)
+	 	  	 otherwise payload.MessageData.ApplicationData.CVRFooter.@FConstantStringTLR[0..8])
+	 	  	 
+	
+}
+
+
+	

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <sub-flow name="senderProcessing">
+        <set-variable variableName="senderXSD" value="#[xpath3('//XSD_FILE',senderValues)]" doc:name="senderXSD"/>
+        <set-variable variableName="senderDWScript" value="#[xpath3('//XSLT_FILE',senderValues)]" doc:name="senderDWScript"/>
+        <set-variable variableName="senderRoutingXSLT" value="#[xpath3('//ROUTING_XSLT_FILE',senderValues)]" doc:name="senderRoutingXSLT" mimeType="text/xml"/>
+        <set-variable variableName="senderValidation" value="#[xpath3('//WB_VALIDATION',senderValues)]" doc:name="senderValidation"/>
+        <set-variable variableName="senderTransformation" value="#[xpath3('//WB_TRANSFORMATION',senderValues)]" doc:name="senderTransformation"/>
+        <set-variable variableName="senderRouting" value="#[xpath3('//WB_ROUTING',senderValues)]" doc:name="senderRouting"/>
+        <set-payload value="#[flowVars['inputMessage']]"  doc:name="inputPayload"/>
+        <choice doc:name="SenderValidationCheck" doc:description="If there is a check in the IIW for WB_VALIDATION, then it is stored as 1 in DB OTHERWISE it is 0.">
+        	<when expression="senderValidation==1">
+        		<flow-ref name="senderValidation" doc:name="senderValidation"/>
+        	</when>
+              <otherwise>
+                <logger message="No Validation at Sender side" level="INFO" doc:name="noValidation"/>
+            </otherwise>
+        </choice>
+                <choice doc:name="SenderRoutingCheck">
+                	<when expression="senderRouting==1">
+                		<flow-ref name="senderRouting" doc:name="senderRouting"/>
+                	</when>
+                	  <otherwise>
+                <logger message="No Routing at Sender side" level="INFO" doc:name="noRouting"/>
+		            </otherwise> 
+                </choice>
+                 <choice doc:name="SenderTransformationCheck" doc:description="If there is a check in the IIW for WB_TRANSFORMATION, then it is stored as 1 in DB OTHERWISE it is 0.">
+                	<when expression="senderTransformation==1">
+                		<flow-ref name="senderTransformation" doc:name="senderTransformation"/>
+                	</when>
+                	  <otherwise>
+                <logger message="No Transformation at Sender side" level="INFO" doc:name="noTransformation"/>
+		            </otherwise> 
+                </choice>
+        <set-variable variableName="senderOutput" value="#[payload]" doc:name="senderOutput"/>
+        </sub-flow>
+</mule>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:mulerequester="http://www.mulesoft.org/schema/mule/mulerequester" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/current/mule-mulerequester.xsd
+http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd">
+   
+    <configuration doc:name="Configuration">
+       <expression-language>
+             <global-functions>
+                 def lPad(input, size) {
+                     return String.format('%' + size + 's', input)
+                 }
+                 def addPad(input)
+                 {
+                    return input.replaceFirst("^0+(?!$)", "")
+                 }
+                 
+             </global-functions>
+         </expression-language>
+        <http:config useTransportForUris="false"/>
+    </configuration>
+    <file:connector name="File" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
+    <sub-flow name="interfaceStarterSubFlow">
+        <set-variable variableName="projectName" value="${ProjectName}" doc:name="projectName"/>
+        <flow-ref name="valueFetchFromIIW" doc:name="valueFetchFromIIW" doc:description="Fetches values from the DB which are configured in IIW based on projectName and stores them in Cache to avoid hitting the database everytime. From the cache, based on inputQueue , it retrieves interfaceID and the corresponding interface details of that interface."/>
+        <logger message="#[flowVars.interfaceID] has received the message with messageID #[flowVars.messageID] on #[flowVars.inputQueue] queue." level="INFO" doc:name="Logger"/>
+        <flow-ref name="senderProcessing" doc:name="senderProcessing"/>
+        <set-payload value="#[flowVars.receiverValues]" doc:name="receiverValues"/>
+        <set-variable variableName="flowName" value="Interface_Starter_Sub_Flow" doc:name="flowName"/>
+        <set-variable variableName="activityName" value="while routing the message to output queue" doc:name="activityName"/>
+        <foreach collection="#[xpath('/root/Receiver',receiverValues)]" rootMessageVariableName="#[message]" doc:name="For Each Subscriber">
+            <set-variable variableName="outputDestination" value="#[xpath3('//OUTPUT_DESTINATION')]" doc:name="outputDestination"/>
+            <choice doc:name="RoutingCheckOn OutputDestination">
+                <when expression="senderRouting==0">
+                    <set-variable variableName="logMessage" value="#[flowVars.interfaceID] with messageID #[flowVars.messageID] has been executed successfully" doc:name="logMessage"/>
+                    <flow-ref name="logger" doc:name="logger"/>
+                    <set-payload value="#[flowVars['transformationVariable']]" doc:name="finalOutput"/>
+                    <set-variable variableName="queueExceptionFlag" value="${QueueExceptionFlag}" doc:name="queueExceptionFlag"/>
+                    <jms:outbound-endpoint doc:name="OutputQueue" connector-ref="Active_MQ" queue="#[flowVars.outputDestination]"/>
+                  </when>
+                <when expression="#[flowVars['outputDestination'] contains flowVars['queueNameOut']]">
+                	<set-variable variableName="logMessage" value="#[flowVars.interfaceID] with messageID #[flowVars.messageID] has been executed successfully" doc:name="logMessage"/>
+                    <flow-ref name="logger" doc:name="logger"/>
+                    <set-payload value="#[flowVars['transformationVariable']]" doc:name="finalOutput"/>
+                    <set-variable variableName="queueExceptionFlag" value="${QueueExceptionFlag}" doc:name="queueExceptionFlag"/>
+                    <jms:outbound-endpoint doc:name="OutputQueue" connector-ref="Active_MQ" queue="#[flowVars.outputDestination]"/>
+                 </when>
+                
+                 <otherwise>
+                    <logger message="Default Exit" level="INFO" doc:name="Logger"/>
+                </otherwise>
+              </choice>
+              
+            </foreach>
+        <logger message="Interface_Starter_Sub_Flow has executed successfully for #[flowVars.interfaceID] with messageID #[flowVars.messageID]" level="INFO" doc:name="Logger"/>
+        </sub-flow>
+</mule>

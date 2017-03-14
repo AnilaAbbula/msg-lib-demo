@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<sub-flow name="valueFetchFromIIW">
+	<set-variable variableName="flowName" value="Value_Fetch" doc:name="flowName"/>
+        <set-variable variableName="activityName" value="Value Fetch from IIW" doc:name="activityName"/>
+        <set-variable doc:name="setSourceSender" value="Sender" variableName="Source"/>
+        <custom-transformer class="WorkBench.JavaCache" doc:name="loadCacheSender">
+            <spring:property name="connectionPort" value="${iiw.connectionport}"/>
+            <spring:property name="password" value="${iiw.password}"/>
+            <spring:property name="DBuser" value="${iiw.databaseuser}"/>
+            <spring:property name="connection" value="${iiw.connection}"/>
+            <spring:property name="user" value="${iiw.user}"/>
+        </custom-transformer>
+        <set-variable variableName="senderValues" value="#[payload]" doc:name="senderValues" mimeType="text/xml"/>
+        <remove-variable doc:name="resetSource" variableName="Source"/>
+        <set-variable variableName="interfaceID" value="#[xpath3('//INTERFACE_ID',senderValues)]" doc:name="interfaceID"/>
+        <set-variable variableName="Source" value="Receiver" doc:name="setSourceReceiver"/>
+         <custom-transformer class="WorkBench.JavaCache" doc:name="loadCacheReceiver">
+         <spring:property name="connectionPort" value="${iiw.connectionport}"/>
+            <spring:property name="password" value="${iiw.password}"/>
+            <spring:property name="DBuser" value="${iiw.databaseuser}"/>
+            <spring:property name="connection" value="${iiw.connection}"/>
+            <spring:property name="user" value="${iiw.user}"/>
+         </custom-transformer>
+       
+        <set-variable doc:name="receiverValues" mimeType="text/xml" value="#[payload]" variableName="receiverValues"/>
+       
+    </sub-flow>
+
+</mule>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <sub-flow name="senderTransformation" doc:description="DWScriptExecution using dw() function.">
+    <set-variable variableName="flowName" value="Sender_Processing" doc:name="flowName"/>
+        <set-variable variableName="activityName" value="DW Script Execution" doc:name="activityName"/>
+        <set-payload value="#[flowVars['inputMessage']]" mimeType="application/xml" doc:name="inputPayload"/>
+        <choice doc:name="senderTransformationCheck">
+
+            <when expression="interfaceIdentifier=='${XML-FFIdentifier}'">
+                <set-payload value="#[dw(flowVars.senderDWScript, 'application/java')]" doc:name="senderScriptExecution"/>
+
+                <object-to-string-transformer doc:name="Object to String"/>
+                <scripting:component doc:name="Groovy">
+                    <scripting:script engine="Groovy"><![CDATA[def res = message.payload.substring(0,57);
+def result=res.replaceAll("\\{part1=",'');
+def res1 = message.payload.substring(57).replaceAll("\\[",'');
+
+def xx = message.payload.substring(7,9);
+	if(xx != "IF")
+	{
+	res1 = message.payload.replaceAll("\\[",'');
+	result="";
+	}
+def res2 = res1.replaceAll("\\{",''); 
+def res3 = res2.replaceAll("A=",'');
+def res4 = res3.replaceAll("B=",'');
+def res5 = res4.replaceAll("C=",'');
+def res6 = res5.replaceAll("D=",'');
+def res7 = res6.replaceAll("E=",'');
+def res8 = res7.replaceAll("F=",'');
+def res9 = res8.replaceAll("G=",'');
+def res10 = res9.replaceAll("\\]",'');
+def res11 = res10.replaceAll("\\}",'');
+def res12 = res11.replaceAll("part1=",'');
+def res13 = res12.replaceAll("part2=",'');
+def res14 = res13.replaceAll("part3=",'');
+def res15 = res14.replaceAll("part4=",'');
+def res16 = res15.replaceAll("part5=",'');
+def res17 = res16.replaceAll("part6=",'');
+def res18 = res17.replaceAll("part7=",'');
+def res19 = res18.replaceAll("part8=",'');
+def res20 = res19.replaceAll("part9=",'');
+def res21 = res20.replaceAll("part10=",'');
+def res22 = res21.replaceAll(", ",'');
+def res23 = res22.replaceAll("\n",'');
+def res24 = res23.replace("!WMS ASN Document","!{WMS ASN Document}");
+return result+res24;
+]]></scripting:script>
+                </scripting:component>
+            </when>
+            <when expression="interfaceIdentifier=='${XML-XMLIdentifier}'">
+                <set-payload value="#[dw(flowVars.senderDWScript, 'application/xml')]" doc:name="senderScriptExecution"/>
+
+                <object-to-string-transformer doc:name="Object to String"/>
+                <scripting:component doc:name="Groovy">
+                    <scripting:script engine="Groovy"><![CDATA[def res1 = message.payload.replaceAll("\n",'');
+return res1;]]></scripting:script>
+                </scripting:component>
+            </when>
+            <otherwise>
+                <logger message="exit transformation" level="INFO" doc:name="Logger"/>
+            </otherwise>
+        </choice>
+         <!--  <component class="WorkBench.XSLTMediator" doc:name="XSLTMediatorSender"/>  -->
+
+        <set-variable variableName="transformationVariable" value="#[payload]" doc:name="transformationVariableSender"/>
+        <set-variable variableName="logMessage" value="DW script of #[flowVars.interfaceID] with messageID #[flowVars.messageID] has been executed successfully" doc:name="logMessage"/>
+        <flow-ref name="logger" doc:name="logger"/>
+
+        
+        </sub-flow>
+</mule>

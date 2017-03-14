@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mulerequester="http://www.mulesoft.org/schema/mule/mulerequester" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/current/mule-mulerequester.xsd">
+    <sub-flow name="exceptionHandler">
+    	<set-variable variableName="stackTrace" value="#[exception.toString()]" doc:name="stackTrace"/>
+            <set-variable variableName="errorDetails" value="#[exception.message]" doc:name="errorDetails"/>
+        <set-variable variableName="logMessage" value="#[flowVars.interfaceID] with messageID #[flowVars.messageID] has not processed successfully." doc:name="logMessage"/>     
+    		<flow-ref name="errorLogger" doc:name="errorLogger"/>
+     </sub-flow>
+</mule>

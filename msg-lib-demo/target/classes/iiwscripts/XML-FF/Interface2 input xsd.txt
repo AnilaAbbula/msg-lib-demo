@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="MessageData">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="ControlData" nillable="true">
+          <xsd:complexType>
+            <xsd:attribute name="BreweryCode" type="xsd:string" use="required"/>
+            <xsd:attribute name="FillerSpace27" type="xsd:string" use="required"/>
+            <xsd:attribute name="InterfaceInstance" type="xsd:string" use="required"/>
+            <xsd:attribute name="InterfaceRunMode" type="xsd:string" use="required"/>
+            <xsd:attribute name="InterfaceRunTimeStamp" type="xsd:string" use="required"/>
+            <xsd:attribute name="OriginalRunId" type="xsd:string" use="required"/>
+            <xsd:attribute name="RunParameter" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="ApplicationData" nillable="true">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="BarcodeCount" nillable="true" type="xsd:string"/>
+              <xsd:element name="FillerSpace72" nillable="true" type="xsd:string"/>
+              <xsd:element name="CVRHeader" nillable="true">
+                <xsd:complexType>
+                  <xsd:attribute name="HBatchNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HBreweryCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HCompanyName" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HConstantString00" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HConstantStringHDR" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HFileNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HFillerSpace12" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HHashLength" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HHashPointerNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HRecordLength" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HSecondSystemDate" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HSubSystemCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HSystemCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HSystemDate" type="xsd:string" use="required"/>
+                  <xsd:attribute name="HSystemTime" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="BarcodeDetails" nillable="true" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:attribute name="BarcodeNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="CasesQuantity" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FillerSpace26" type="xsd:string" use="required"/>
+                  <xsd:attribute name="OrderNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="PCSCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="ProdDate" type="xsd:string" use="required"/>
+                  <xsd:attribute name="ProdTime" type="xsd:string" use="required"/>
+                  <xsd:attribute name="ProductionBrewery" type="xsd:string" use="required"/>
+                  <xsd:attribute name="ProductionUnitNumber" type="xsd:string" use="required"/>
+                  <xsd:attribute name="SendingBreweryCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="WholesalerNumber" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="CVRFooter" nillable="true">
+                <xsd:complexType>
+                  <xsd:attribute name="FConstantStringTLR" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FFillerSpace8" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FFourthFillerSpace1" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FHashTotalCount" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FRecordCount" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FSecondFillerSpace8" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FSubSystemCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FSystemCode" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FSystemDate" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FSystemTime" type="xsd:string" use="required"/>
+                  <xsd:attribute name="FThirdFillerSpace9" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="IF033_message_in">
+    <xsd:sequence>
+      <xsd:element name="MessageData" nillable="true">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ControlData" nillable="true">
+              <xsd:complexType>
+                <xsd:attribute name="BreweryCode" type="xsd:string" use="required"/>
+                <xsd:attribute name="FillerSpace27" type="xsd:string" use="required"/>
+                <xsd:attribute name="InterfaceInstance" type="xsd:string" use="required"/>
+                <xsd:attribute name="InterfaceRunMode" type="xsd:string" use="required"/>
+                <xsd:attribute name="InterfaceRunTimeStamp" type="xsd:string" use="required"/>
+                <xsd:attribute name="OriginalRunId" type="xsd:string" use="required"/>
+                <xsd:attribute name="RunParameter" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ApplicationData" nillable="true">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="BarcodeCount" nillable="true" type="xsd:string"/>
+                  <xsd:element name="FillerSpace72" nillable="true" type="xsd:string"/>
+                  <xsd:element name="CVRHeader" nillable="true">
+                    <xsd:complexType>
+                      <xsd:attribute name="HBatchNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HBreweryCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HCompanyName" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HConstantString00" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HConstantStringHDR" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HFileNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HFillerSpace12" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HHashLength" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HHashPointerNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HRecordLength" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HSecondSystemDate" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HSubSystemCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HSystemCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HSystemDate" type="xsd:string" use="required"/>
+                      <xsd:attribute name="HSystemTime" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                  <xsd:element name="BarcodeDetails" nillable="true" maxOccurs="unbounded">
+                    <xsd:complexType>
+                      <xsd:attribute name="BarcodeNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="CasesQuantity" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FillerSpace26" type="xsd:string" use="required"/>
+                      <xsd:attribute name="OrderNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="PCSCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="ProdDate" type="xsd:string" use="required"/>
+                      <xsd:attribute name="ProdTime" type="xsd:string" use="required"/>
+                      <xsd:attribute name="ProductionBrewery" type="xsd:string" use="required"/>
+                      <xsd:attribute name="ProductionUnitNumber" type="xsd:string" use="required"/>
+                      <xsd:attribute name="SendingBreweryCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="WholesalerNumber" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                  <xsd:element name="CVRFooter" nillable="true">
+                    <xsd:complexType>
+                      <xsd:attribute name="FConstantStringTLR" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FFillerSpace8" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FFourthFillerSpace1" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FHashTotalCount" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FRecordCount" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FSecondFillerSpace8" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FSubSystemCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FSystemCode" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FSystemDate" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FSystemTime" type="xsd:string" use="required"/>
+                      <xsd:attribute name="FThirdFillerSpace9" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="encoding" type="xsd:string" use="required"/>
+  </xsd:complexType>
+</xsd:schema>

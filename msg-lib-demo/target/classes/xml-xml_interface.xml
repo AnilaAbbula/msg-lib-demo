@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq" xmlns:secure-property-placeholder="http://www.mulesoft.org/schema/mule/secure-property-placeholder" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-property-placeholder http://www.mulesoft.org/schema/mule/secure-property-placeholder/current/mule-secure-property-placeholder.xsd
+http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd">
+    <queued-asynchronous-processing-strategy name="AllowOneThread" maxThreads="${async.maxthreads}" threadWaitTimeout="${async.threadtimeout}" doc:name="Queued Asynchronous Processing Strategy"/>
+
+   
+    <!--  interface_starter_101,144 -->
+    
+   <!-- interface_starter_138 -->
+     <flow name="interfaceStarterXMLtoXML" processingStrategy="AllowOneThread">
+        <jms:inbound-endpoint queue="${Queue3}" connector-ref="Active_MQ" doc:name="InputQueue3" responseTimeout="${jms.responsetimeout}"/>
+        <set-variable variableName="inputMessage" value="#[payload]" doc:name="inputMessage"/>
+        <set-variable variableName="inputQueue" value="${Queue3}" doc:name="inputQueue"/>
+        <set-variable variableName="interfaceIdentifier" value="${XML-XMLIdentifier}" doc:name="interfaceIdentifier"/>
+        <set-variable variableName="messageID" value="#[xpath3('//ShipmentASN/@brwy_cd')]_#[xpath3('//ShipmentASN/@PickupScheduledTSP')]" doc:name="messageID"/>
+        <logger message="#[flow.name] has executed successfully." level="INFO" doc:name="Logger"/>
+        <flow-ref name="interfaceStarterSubFlow" doc:name="interfaceStarterSubFlow"/>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <flow-ref name="exceptionHandler" doc:name="exceptionHandler"/>
+            <logger message="An Exception has occured" level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+    </flow>
+</mule>

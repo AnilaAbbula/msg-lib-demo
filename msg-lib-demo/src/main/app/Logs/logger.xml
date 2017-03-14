@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <sub-flow name="logger">
+        <db:insert config-ref="Oracle_Configuration" doc:name="loggingToDatabase">
+            <db:parameterized-query><![CDATA[insert into ${iiw.databaseuser}.tbl_log_info (process_name, activity_name, log_time_stamp, log_info, log_data,interface_id, project_name, message_id) values (#[flowVars['flowName']],#[flowVars['activityName']], current_timestamp, 'INFO', #[flowVars['logMessage']], #[flowVars['interfaceID']],#[flowVars['projectName']],#[flowVars['messageID']] )]]></db:parameterized-query>
+        </db:insert>
+        </sub-flow>
+</mule>

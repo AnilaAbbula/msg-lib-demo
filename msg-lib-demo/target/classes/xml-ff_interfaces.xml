@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:wmq="http://www.mulesoft.org/schema/mule/ee/wmq"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/ee/wmq http://www.mulesoft.org/schema/mule/ee/wmq/current/mule-wmq-ee.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+     <queued-asynchronous-processing-strategy name="AllowOnethread" maxThreads="${async.maxthreads}" threadWaitTimeout="${async.threadtimeout}" doc:name="Queued Asynchronous Processing Strategy"/>
+
+
+<flow name="interfaceStartersXMLtoFF" processingStrategy="AllowOnethread">
+        <composite-source doc:name="Composite Source">
+            <jms:inbound-endpoint queue="${Queue1}" connector-ref="Active_MQ" doc:name="InputQueue1" responseTimeout="${jms.responsetimeout}"/>
+            <jms:inbound-endpoint queue="${Queue2}" connector-ref="Active_MQ" doc:name="InputQueue2" responseTimeout="${jms.responsetimeout}"/>
+        </composite-source>
+ 
+        <set-variable variableName="inputMessage" value="#[payload]" doc:name="inputMessage"/>
+        <set-variable variableName="inputQueue" value="#[org.mule.util.StringUtils.substringAfter(message.inboundProperties['MULE_ORIGINATING_ENDPOINT'],'endpoint.jms.')]" doc:name="inputQueue"/>
+        <set-variable variableName="interfaceIdentifier" value="${XML-FFIdentifier}" doc:name="interfaceIdentifier"/>
+        <set-variable variableName="messageID" value="#[xpath3('//ControlData/@BreweryCode')]_#[xpath3('//ControlData/@InterfaceRunTimeStamp')] " doc:name="messageID"/>
+        <logger message="#[flow.name] has executed successfully." level="INFO" doc:name="Logger"/>
+        <flow-ref name="interfaceStarterSubFlow" doc:name="interfaceStarterSubFlow"/>
+         <catch-exception-strategy doc:name="Catch Exception Strategy">
+              <flow-ref name="exceptionHandler" doc:name="exceptionHandler"/>
+            <logger message="An Exception has occured" level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+</flow>
+</mule>
+
